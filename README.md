@@ -41,13 +41,41 @@ This Article provides step by step process of cloning AWS dynamoDB data using HD
 
 1) Create and External Table in hive using below command via beeline
 
-	- 	CREATE EXTERNAL TABLE dynamodb.UserStorage_201810 (userId string,Name string,age bigint) 
+	- 	CREATE EXTERNAL TABLE dynamodb.UserInfo (userId string,Name string,age bigint,lastModified bigint) 
 		ROW FORMAT SERDE 'org.apache.hadoop.hive.dynamodb.DynamoDBSerDe' STORED BY 'org.apache.hadoop.hive.dynamodb.DynamoDBStorageHandler'
 		TBLPROPERTIES ("dynamodb.table.name"="UserInfo","dynamodb.region"="eu-west-2","dynamodb.throughput.read.percent"=".5000",
-		"dynamodb.column.mapping"="userId:userId,Name:Name,age:age");
+		"dynamodb.column.mapping"="userId:userId,Name:Name,age:age,lastModified:lastModified");
 		
-	-   dynamodb.table.name --> Exact Name of DynamoDB Table
-	-   dynamodb.region --> Region name where table is located
-    -   dynamodb.throughput.read.percent --> what percentage of DynamoDB table read capacity units can mapreduce job can consume to copy data : set a moderate % as required in above conf I have used 0.5000 indicating I can use 50% of read units [remember 1unit is 4kb per sec and aws cost will be through the roof if auto scaling is enabled and table contains huge amount of data]
+		-   dynamodb.table.name --> Exact Name of DynamoDB Table
+		-   dynamodb.region --> Region name where table is located
+    	-   dynamodb.throughput.read.percent --> what percentage of DynamoDB table read capacity units can mapreduce job can consume to copy data : set a moderate % as required in above conf I have used 0.5000 indicating I can use 50% of read units [remember 1unit is 4kb per sec and aws cost will be through the roof if auto scaling is enabled and table contains huge amount of data]
 
+2) Create an ORC ACID Internal table as I was looking at transactional data with updates in Dynamodb data, not just inserts.
 
+	- 	CREATE TABLE dynamodb.UserInfo_orc (userid string,Name string,age bigint,lastModified bigint,lastModified_date timestamp) 
+		CLUSTERED BY (userid) INTO 256 BUCKETS 
+		stored as ORC TBLPROPERTIES ("immutable"="false","transactional"="true");
+
+3) [Initial Load] Insert data from external dynamoDB table into created orc table as below [Initial Load]:
+
+	-	insert into dynamodb.UserInfo_orc select userid,Name,age,lastModified,cast(from_unixtime(floor(CAST(lastModified AS BIGINT)/1000), 'yyyy-MM-dd HH:mm:ss.SSS') as timestamp) from dynamodb.vw_UserDevices;
+	
+4) [Incremental Load] Create a table from the external Table with only to the latest data in external table, run every hour [I capture data 1 hour before the latest data in my ORC table and replace it every hour, creating another table helps with not having table locks while insert from external table happens which may take long time due to dynamoDB read limitation]
+
+	- 	select max(lastmodified)-3600000 from dynamodb.UserInfo_orc;  --> ${lastupdateddate}
+	-	Drop Table dynamodb.UserInfo_Temp;
+	- 	Create Table dynamodb.UserInfo_Temp stored as orc as select * from dynamodb.UserInfo where lastModified>=${lastupdateddate};
+	
+Note: This requires indexes in dynamodb created properly using lastModified esle it may read entire table to get incremental data
+
+5) Once the Temperory table with latest records are loaded, as the ORC table is created as ACID table, I delete the userid(s) present in temperory table from ORC table, which are updated in this case. in My case userid is the PK in Dynamodb UserInfo table 
+
+	- 	delete from dynamodb.UserInfo_orc where userid in (select userid from dynamodb.UserInfo_Temp); 
+
+6) Once Delete is done, Its time to insert incremental data into ORC Table:
+
+	-	insert into dynamodb.UserInfo_orc select userid,Name,age,lastModified,cast(from_unixtime(floor(CAST(lastModified AS BIGINT)/1000), 'yyyy-MM-dd HH:mm:ss.SSS') as timestamp) from dynamodb.UserInfo_Temp;
+	
+7) If you are running the incremental too often like I do, its a good idea to do compact after insert to reduce the files
+
+	- 	ALTER TABLE dynamodb.UserInfo_orc COMPACT 'MAJOR';
