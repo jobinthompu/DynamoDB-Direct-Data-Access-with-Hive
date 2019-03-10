@@ -35,5 +35,15 @@ This Article provides step by step process of cloning AWS dynamoDB data using HD
 
 5) Make sure to remove existing jackson*.jars from /usr/hdp/2.6.x.x/hive/lib/ to another folder when replacing it with jars downloaded in step 1
 
-6) Restart Hive and any other services in HDP which requires the same.
+6) Restart Hive and any other services in HDP which requires the same. Steps till now will make sure you can access data in DynamoDB via hive.
+
+# Steps to Clone DynamoDB data using Hive
+
+1) Create and External Table in hive using below command via beeline
+
+	- CREATE EXTERNAL TABLE dynamodb.UserStorage_201810 (userId string,Name string,age bigint) 
+	ROW FORMAT SERDE 'org.apache.hadoop.hive.dynamodb.DynamoDBSerDe' STORED BY 'org.apache.hadoop.hive.dynamodb.DynamoDBStorageHandler'
+	TBLPROPERTIES ("dynamodb.table.name"="UserInfo","dynamodb.region"="eu-west-2","dynamodb.throughput.read.percent"=".5000",
+	"dynamodb.column.mapping"="userId:userId,Name:Name,age:age");
+
 
