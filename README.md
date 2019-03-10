@@ -1,14 +1,15 @@
 # DynamoDB-Direct-Data-Access-with-Hive
 This Article provides step by step process of cloning AWS dynamoDB data using HDP Hive. When I was researching this for my use, no reference to use below outside EMR was available, Hence decided to share it for anyone who may benefit from this.
 
-Prerequisites
+# Prerequisites:
+
 -- Up and Running HDP Cluster available
 -- Usable DynamoDB tables with secret and Access key of a read access user and is reachable from hadoop nodes.
 -- maven installed locally to build few jars
 
-Steps to Configure DynamoDB Direct Access:
+# Steps to Configure DynamoDB Direct Access:
 
-1) Download below jars and copy it to "/usr/hdp/2.6.x.x-yyy/hive/auxlib/" and /usr/hdp/2.6.x.x-yyy/hive2/auxlib/ on all Hive servers and edge nodes [make sure to use latest versions of below jars]
+1) Download below jars and copy it to "/usr/hdp/2.6.x.x-yyy/hive/auxlib/" and /usr/hdp/2.6.x.x-yyy/hive2/auxlib/ on all Hive servers and edge nodes [make sure to use latest versions of below jars as time passes]
 
      http://central.maven.org/maven2/com/amazonaws/aws-java-sdk-dynamodb/1.11.445/aws-java-sdk-dynamodb-1.11.445.jar
      http://central.maven.org/maven2/com/amazonaws/aws-java-sdk-core/1.11.445/aws-java-sdk-core-1.11.445.jar
