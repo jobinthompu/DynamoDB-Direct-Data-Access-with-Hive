@@ -94,5 +94,5 @@ Note: This requires indexes in dynamodb created properly using lastModified esle
 	
 ## References:
 	
-[ AWS Docuemntation ](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/EMRforDynamoDB.html)
-[ EMR Github ](https://github.com/awslabs/emr-dynamodb-connector)
+* [ AWS Docuemntation ](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/EMRforDynamoDB.html)
+* [ EMR Github ](https://github.com/awslabs/emr-dynamodb-connector)
