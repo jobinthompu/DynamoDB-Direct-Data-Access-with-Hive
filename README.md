@@ -86,12 +86,13 @@ Note: This requires indexes in dynamodb created properly using lastModified esle
 	```
 	insert into dynamodb.UserInfo_orc select userid,Name,age,lastModified,cast(from_unixtime(floor(CAST(lastModified AS BIGINT)/1000), 'yyyy-MM-dd HH:mm:ss.SSS') as timestamp) from dynamodb.UserInfo_Temp;
 	```
-7) If you are running the incremental too often like I do, its a good idea to do compact after insert to reduce the files
+7) If you are running the incremental too often like I do, its a good idea to do compaction after insert to reduce the files
 
 	```
 	ALTER TABLE dynamodb.UserInfo_orc COMPACT 'MAJOR';
 	```
-	
+Note: I use Apache NiFi to automate the end to end flow Along with monitoring on each step via slack, the job runs hourly.
+
 ## References:
 	
 * [ AWS Docuemntation ](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/EMRforDynamoDB.html)
