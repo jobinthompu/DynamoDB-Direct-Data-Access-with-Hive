@@ -26,12 +26,12 @@ This Article provides step by step process of cloning AWS dynamoDB data using HD
 
 3) In the Target directories of the build, above mentioned jars will be present, place them in hive directories /usr/hdp/2.6.x.x-yyy/hive2/auxlib/ and /usr/hdp/2.6.x.x-yyy/hive/auxlib/ .
 
-4) Add below configurations in custom hive-site.xml and tez-site.xml
+4) Add below 4 configurations in custom hive-site.xml and tez-site.xml
 
-      fs.s3.awsSecretAccessKey=##SECRET_KEY##
-      fs.s3.awsAccessKeyId=##ACCESS_KEY##
-      dynamodb.awsSecretAccessKey=##SECRET_KEY##
-      dynamodb.awsAccessKeyId=##ACCESS_KEY##
+      - fs.s3.awsSecretAccessKey=##SECRET_KEY##
+      - fs.s3.awsAccessKeyId=##ACCESS_KEY##
+      - dynamodb.awsSecretAccessKey=##SECRET_KEY##
+      - dynamodb.awsAccessKeyId=##ACCESS_KEY##
 
 5) Make sure to remove existing jackson*.jars from /usr/hdp/2.6.x.x/hive/lib/ to another folder when replacing it with jars downloaded in step 1
 
