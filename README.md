@@ -41,9 +41,13 @@ This Article provides step by step process of cloning AWS dynamoDB data using HD
 
 1) Create and External Table in hive using below command via beeline
 
-	- CREATE EXTERNAL TABLE dynamodb.UserStorage_201810 (userId string,Name string,age bigint) 
-	ROW FORMAT SERDE 'org.apache.hadoop.hive.dynamodb.DynamoDBSerDe' STORED BY 'org.apache.hadoop.hive.dynamodb.DynamoDBStorageHandler'
-	TBLPROPERTIES ("dynamodb.table.name"="UserInfo","dynamodb.region"="eu-west-2","dynamodb.throughput.read.percent"=".5000",
-	"dynamodb.column.mapping"="userId:userId,Name:Name,age:age");
+	- 	CREATE EXTERNAL TABLE dynamodb.UserStorage_201810 (userId string,Name string,age bigint) 
+		ROW FORMAT SERDE 'org.apache.hadoop.hive.dynamodb.DynamoDBSerDe' STORED BY 'org.apache.hadoop.hive.dynamodb.DynamoDBStorageHandler'
+		TBLPROPERTIES ("dynamodb.table.name"="UserInfo","dynamodb.region"="eu-west-2","dynamodb.throughput.read.percent"=".5000",
+		"dynamodb.column.mapping"="userId:userId,Name:Name,age:age");
+		
+		dynamodb.table.name --> Exact Name of DynamoDB Table
+		dynamodb.region --> Region name where table is located
+		dynamodb.throughput.read.percent --> what percentage of DynamoDB table read capacity units can mapreduce job can consume to copy data : set a moderate % as required in above conf I have used 0.5000 indicating I can use 50% of read units [remember 1unit is 4kb per sec and aws cost will be through the roof if auto scaling is enabled and table contains huge amount of data]
 
 
