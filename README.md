@@ -3,9 +3,9 @@ This Article provides step by step process of cloning AWS dynamoDB data using HD
 
 ## Prerequisites:
 ```
-	1) Up and Running HDP Cluster available
-	2) Usable DynamoDB tables with secret and Access key of a read access user and is reachable from hadoop nodes.
-	3) maven installed locally to build few jars
+1) Up and Running HDP Cluster available
+2) Usable DynamoDB tables with secret and Access key of a read access user and is reachable from hadoop nodes.
+3) maven installed locally to build few jars
 ```
 ## Steps to Configure DynamoDB Direct Access:
 
