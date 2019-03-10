@@ -3,9 +3,9 @@ This Article provides step by step process of cloning AWS dynamoDB data using HD
 
 # Prerequisites:
 
--- Up and Running HDP Cluster available
--- Usable DynamoDB tables with secret and Access key of a read access user and is reachable from hadoop nodes.
--- maven installed locally to build few jars
+	- Up and Running HDP Cluster available
+	- Usable DynamoDB tables with secret and Access key of a read access user and is reachable from hadoop nodes.
+	- maven installed locally to build few jars
 
 # Steps to Configure DynamoDB Direct Access:
 
@@ -20,11 +20,8 @@ This Article provides step by step process of cloning AWS dynamoDB data using HD
 2) Build below Repository from github and copy 2 jars  emr-dynamodb-hadoop-x.x.x.jar and emr-dynamodb-hive-x.x.x-SNAPSHOT-jar-with-dependencies.jar
 
       $ cd 
-
       $ git clone https://github.com/awslabs/emr-dynamodb-connector 
-
       $ cd  emr-dynamodb-connector/ 
-
       $ mvn clean install
 
 3) In the Target directories of the build, above mentioned jars will be present, place them in hive directories /usr/hdp/2.6.x.x-yyy/hive2/auxlib/ and /usr/hdp/2.6.x.x-yyy/hive/auxlib/ .
